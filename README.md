@@ -49,7 +49,7 @@ ansible-playbook -i env/dev-local/hosts.ini site.yml --extra-vars "deployment=ab
 
 ## TO DO list
 
-- Automated backup of Home Assistant and Portainer config
+- Automated backup of heimdall, Home Assistant and Portainer configs
 - vSupport VM
 - Use the second compute node for dev environment
 - CI/CD using Github Actions
