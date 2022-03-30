@@ -18,9 +18,9 @@ module "vservers_hv1" {
   providers = {
     libvirt = libvirt.hv1
   }
-  source      = "../../../terraform-libvirt-vm"
-  # source  = "MonolithProjects/vm/libvirt"
-  # version = "1.8.1"
+  # source      = "../../../terraform-libvirt-vm"
+  source  = "MonolithProjects/vm/libvirt"
+  version = "1.9.0"
 
   vm_hostname_prefix = var.hv1_vm_prefix
   vm_count    = var.hv1_vm_count
