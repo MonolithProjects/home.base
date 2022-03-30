@@ -4,7 +4,7 @@ This repo contains the IaC for my home system. It's based on KVM/libvirt VM(s). 
 
 ## What's behind this
 
-I tried to create an infrastructure for my home system to be as simple as possible. Before i endedup with this simple design i was elaborating RKE2, K3s and Nomad... but since at work i am managing large K8s sclusters, to have a complex cluster also at home was my last intention :)
+I tried to create an infrastructure for my home system to be as simple as possible. Before i endedup with this simple design i was elaborating RKE2, K3s and Nomad... but since at work i am managing large K8s sclusters, to have a complex cluster also at home was my last intention (in addition to few hardware limitations).
 
 ## How it works
 
