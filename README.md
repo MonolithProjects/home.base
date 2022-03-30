@@ -8,7 +8,7 @@ I tried to create an infrastructure for my home system to be as simple as possib
 
 ## How it works
 
-The IaC is located in the `code` directory. Most likely you will not need to touch it. On the other and, the directory `env` contains the various environments where you want to deploy this system. The content looks like this:
+The IaC is located in the `code` directory. Most likely you will not need to touch it. The directory `env` contains the variables for environments where you want to deploy this system. The content looks like this:
 
 ```sh
 ├── example               <<< # the name of the environment
@@ -30,6 +30,10 @@ To destroy the system, run:
 ansible-playbook -i env/dev-local/hosts.ini site.yml --extra-vars "deployment=absent"
 ```
 
+## Deployment workflow
+
+![](./workflow.png)
+
 ## Design
 
 ![](./architecture.png)
@@ -42,10 +46,6 @@ ansible-playbook -i env/dev-local/hosts.ini site.yml --extra-vars "deployment=ab
   - Dev - 2xCPU Pentium-D, 8 GB RAM, 120GB SSD
 - Ubuntu 20.04 TLS
 - KVM/libvirt 4.0.0
-
-## Deployment workflow
-
-![](./workflow.png)
 
 ## TO DO list
 
