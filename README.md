@@ -8,27 +8,41 @@ I tried to create an infrastructure for my home system to be as simple as possib
 
 ## How it works
 
-The IaC is located in the `code` directory. Most likely you will not need to touch it. The directory `env` contains the variables for environments where you want to deploy this system. The content looks like this:
+The IaC is located in the `code` directory. Most likely you will not need to change it. The directory `env` contains the variables for environments where you want to deploy this system. The content looks like this:
 
 ```sh
 ├── example               <<< # the name of the environment
 │   ├── group_vars        <<< # group wars dir
 │   │   └── all.yml       <<< # group wars file for all nodes
-│   ├── hosts.ini         <<< # ansible inventory file (will be generated during the run)
-│   └── terraform.tfvars  <<< # terraform variables
+│   ├── hosts.ini         <<< # Ansible inventory file (will be generated during the run)
+│   ├── backend.hcl       <<< # Terraform backend config (encrypted)
+│   ├── secrets.tfvars    <<< # Terraform secret variables (encrypted)
+│   └── terraform.tfvars  <<< # Terraform variables
 ```
 
 To deploy the system, run:
 
 ```sh
-ansible-playbook -i env/dev-local/hosts.ini site.yml
+ansible-playbook -i env/example/hosts.ini site.yml
 ```
 
 To destroy the system, run:
 
 ```sh
-ansible-playbook -i env/dev-local/hosts.ini site.yml --extra-vars "deployment=absent"
+ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=absent"
 ```
+
+To update Terraform cache, run:
+
+```sh
+ansible-playbook -i env/example/hosts.ini site.yml --tags decrypt
+cd code/terraform/
+terraform init -backend-config=../../env/example/decrypted.backend.hcl -reconfigure
+```
+
+Some facts:
+- Secrets are encrypted using Ansible-vault (so you need to provide `--ask-vault-pass` option or `ANSIBLE_VAULT_PASSWORD_FILE` environment variable)
+- I am using Terraform cloud to store the state file
 
 ## Deployment workflow
 
@@ -44,7 +58,7 @@ ansible-playbook -i env/dev-local/hosts.ini site.yml --extra-vars "deployment=ab
 - Mini PCs
   - Prod - 4xCPU Intel i3, 8 GB RAM, 120GB SSD, 4TB external HDD, 60GB USB flash drive
   - Dev - 2xCPU Pentium-D, 8 GB RAM, 120GB SSD
-- Ubuntu 20.04 TLS
+- Ubuntu 20.04 LTS
 - KVM/libvirt 4.0.0
 
 ## TO DO list

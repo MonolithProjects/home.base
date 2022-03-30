@@ -30,6 +30,8 @@
         with_items:
           - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
           - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'
+      tags:
+        - decrypt
 
 
 - name: Deploy Infrastructure - Terraform

@@ -6,11 +6,10 @@ hv1_vm_prefix     = "hv1-vserver"
 hv1_vm_count      = 1
 hv1_index_start   = 1
 hv1_memory        = "2048"
-hv1_hugepages     = false
 hv1_vcpu          = 2
 hv1_pool          = "host1"
 hv1_system_volume = 20
-hv1_dhcp          = false
+hv1_dhcp          = true
 hv1_ip_address    = [ 
     "192.168.122.161",
     "192.168.122.162",
@@ -25,7 +24,7 @@ hv1_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-server-clou
 hv1_bridge        = "virbr0"
 
 hv1_xml_override = {
-      hugepages = true,
+      hugepages = false,
       usb_controllers = [
         {
           model = "qemu-xhci"
