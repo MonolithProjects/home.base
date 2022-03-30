@@ -1,0 +1,66 @@
+---
+- name: Deploy Infrastructure - Secrets
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - block:
+      - name: Decrypt backend
+        copy:
+          src: '{{ playbook_dir }}/../../../env/{{ system_env }}/backend.hcl'
+          dest: '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'
+          decrypt: yes
+          mode: 400
+          backup: no
+
+      - name: Decrypt secrets
+        copy:
+          src: '{{ playbook_dir }}/../../../env/{{ system_env }}/secrets.tfvars'
+          dest: '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
+          decrypt: yes
+          mode: 400
+          backup: no
+
+      rescue:
+      - name: Delete decrypted files
+        file:
+          state: absent
+          path: "{{ item }}"
+        with_items:
+          - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
+          - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'
+
+
+- name: Deploy Infrastructure - Terraform
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - block:
+      - name: Deployment following environment...
+        debug:
+          var: system_env
+
+      - name: Run Terraform
+        community.general.terraform:
+          backend_config_files:
+            - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'
+          force_init: true
+          project_path: '{{ playbook_dir }}/../../terraform'
+          variables_files: 
+            - '{{ playbook_dir }}/../../../env/{{ system_env }}/terraform.tfvars'
+            - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
+          state: '{{ deployment | default("present") }}'
+
+      - meta: refresh_inventory
+
+      always:
+      - name: Delete decrypted files
+        file:
+          state: absent
+          path: "{{ item }}"
+        with_items:
+          - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
+          - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'

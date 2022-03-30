@@ -1,0 +1,144 @@
+---
+- name: Bootstrap virtual servers
+  hosts: all
+  user: sshadmin
+  become: yes
+  gather_facts: yes
+
+  handlers:
+    - import_tasks: ../handlers/main.yml
+  
+  pre_tasks:
+    - name: "Install linux-modules-extra-{{ ansible_kernel }}"
+      package:
+        name: "linux-modules-extra-{{ ansible_kernel }}"
+        state: present
+      notify: reboot server
+
+  roles:
+    - geerlingguy.pip
+    - geerlingguy.docker
+
+  tasks:
+    - name: Create a new primary partition on backup_disk disk
+      parted:
+        device: "/dev/{{ backup_disk | regex_replace('1$', '') }}"
+        number: 1
+        state: present
+      when: system_env == "prod"
+
+    - name: Create a ext4 filesystem on backup disk
+      filesystem:
+        fstype: ext4
+        dev: "/dev/{{ backup_disk }}"
+      when: system_env == "prod"
+
+    - name: Create mountpoints for external starage
+      file:
+        path: "{{ item }}"
+        recurse: no # for some reason the recurse option causes big time delay (module bug?)
+        state: directory
+        owner: "{{ ansible_user_gid }}"
+        group: "{{ ansible_user_gid }}"
+      with_items:
+        - "/mnt/volumes"
+        - "/mnt/volumes/nfs"
+        - "/mnt/volumes/persistent_storage"
+        - "/mnt/volumes/backup"
+
+    - name: Mount Production storage
+      block:
+      - name: Mount backup_disk disk
+        mount:
+          path: "/mnt/volumes/backup"
+          src: "/dev/{{ backup_disk }}"
+          fstype: ext4
+          state: mounted
+
+      - name: Mount data disk
+        mount:
+          path: "/mnt/volumes/nfs"
+          src: "/dev/{{ data_disk }}"
+          fstype: ext4
+          state: mounted
+      when: system_env == "prod"
+
+    - name: Change Docker service - Create folder
+      file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+        recurse: yes
+
+    - name: Change Docker service - Copy service file
+      copy:
+        src: files/startup_options.conf
+        dest: /etc/systemd/system/docker.service.d/startup_options.conf
+        mode: '0644'
+      register: docker_api
+      notify:
+        - systemd reload
+        - docker restart
+
+    - name: Load Ansible managed kernel modules
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nfs
+        - nfsd
+    
+    - name: Create kernel modules file
+      file:
+        path: /etc/modules-load.d/ansible_managed.conf
+        state: touch
+
+    - name: Set Asnible managed kernel modules to be persinsent
+      lineinfile:
+        path: /etc/modules-load.d/ansible_managed.conf
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - nfs
+        - nfsd
+
+    - meta: flush_handlers
+
+########## Portainer ############################
+
+    - name: Portainer
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        security_opts:
+          - no-new-privileges:true
+        volumes:
+          - /etc/localtime:/etc/localtime:ro
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - portainer-data:/data
+        ports:
+          - 9000:9000
+
+########## Prune Docker #########################
+    - name: Copy PruneDocker service
+      copy:
+        src: files/PruneDocker.service
+        dest: /etc/systemd/system/PruneDocker.service
+      tags:
+        - prunedocker
+
+    - name: Copy PruneDocker timer
+      copy:
+        src: files/PruneDocker.timer
+        dest: /etc/systemd/system/PruneDocker.timer
+      tags:
+        - prunedocker
+
+    - name: Enable PruneDocker service
+      systemd:
+        name: PruneDocker.timer
+        state: started
+        enabled: yes
+      tags:
+        - prunedocker

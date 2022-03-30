@@ -1,0 +1,8 @@
+---
+ # ansible-galaxy install -f -r ./requirements.yml --roles-path=./code/ansible/roles
+
+- name: geerlingguy.docker
+  version: master
+
+- name: geerlingguy.pip
+  version: master

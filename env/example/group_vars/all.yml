@@ -1,0 +1,10 @@
+# Ansible group vars for all nodes
+
+# Environment name (infotunatelly can not use inventory_dir variable for local run)
+system_env: dev-local
+
+# Pip packages to be deployed on vServer(s)
+pip_install_packages:
+  - docker
+
+run_backup: false

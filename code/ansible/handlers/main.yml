@@ -1,0 +1,20 @@
+---
+- name: systemd reload
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: docker restart
+  become: yes
+  systemd:
+    name: docker
+    state: restarted
+
+- name: systemd-resolved restart
+  become: yes
+  systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: reboot server
+  reboot:

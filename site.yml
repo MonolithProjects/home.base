@@ -1,0 +1,15 @@
+############ Deploy Infra #######################
+
+- name: Deploy Infrastructure
+  import_playbook: code/ansible/playbooks/infra.yml
+  tags: 
+    - deploy
+    - infra
+
+############ Bootstrap VMs ######################
+
+- name: Bootstrap all nodes
+  import_playbook: code/ansible/playbooks/bootstrap.yml
+  tags: 
+    - deploy
+    - bootstrap
