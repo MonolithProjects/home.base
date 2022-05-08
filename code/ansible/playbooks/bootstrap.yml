@@ -1,6 +1,6 @@
 ---
 - name: Bootstrap virtual servers
-  hosts: all
+  hosts: vservers
   user: sshadmin
   become: yes
   gather_facts: yes
@@ -11,9 +11,11 @@
   pre_tasks:
     - name: "Install linux-modules-extra-{{ ansible_kernel }}"
       package:
-        name: "linux-modules-extra-{{ ansible_kernel }}"
+        name: 
+          - "linux-modules-extra-{{ ansible_kernel }}"
         state: present
       notify: reboot server
+
 
   roles:
     - geerlingguy.pip
@@ -69,6 +71,18 @@
         state: directory
         recurse: yes
 
+    - name: Ensure Update packages is disabled
+      lineinfile:
+        path: /etc/apt/apt.conf.d/20auto-upgrades
+        regexp: '^APT::Periodic::Update-Package-Lists'
+        line: APT::Periodic::Update-Package-Lists "0";
+
+    - name: Ensure Unattended upgrade is disabled
+      lineinfile:
+        path: /etc/apt/apt.conf.d/20auto-upgrades
+        regexp: '^APT::Periodic::Unattended-Upgrade'
+        line: APT::Periodic::Unattended-Upgrade "0";
+
     - name: Change Docker service - Copy service file
       copy:
         src: files/startup_options.conf
@@ -84,6 +98,7 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - cdc_acm
         - nfs
         - nfsd
     

@@ -9,3 +9,7 @@ hv1_local_admin_passwd = "$6$rounds=4096$HASHED_PASSWORD"
 
 # SSH Public Key to be deployed on vServer
 hv1_ssh_keys           = ["ssh PUBLIC KEY...",]
+
+hv1_support_ssh_private_key    = "~/.ssh/home_system_ed25519"
+hv1_support_local_admin_passwd = "$6$rounds=4096$HASHED_PASSWORD"
+hv1_support_ssh_keys           = ["ssh PUBLIC KEY...",]
