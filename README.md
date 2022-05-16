@@ -29,7 +29,7 @@ ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=pres
 To only configure the system, and do not tun `terraform apply` (but still it will run the `plan`):
 
 ```sh
-ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=present"
+ansible-playbook -i env/example/hosts.ini site.yml
 ``
 
 To destroy the system, run:
