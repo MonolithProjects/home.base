@@ -23,8 +23,14 @@ The IaC is located in the `code` directory. Most likely you will not need to cha
 To deploy the system, run (don't forget to export `ANSIBLE_VAULT_PASSWORD_FILE`):
 
 ```sh
-ansible-playbook -i env/example/hosts.ini site.yml
+ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=present"
 ```
+
+To only configure the system, and do not tun `terraform apply` (but still it will run the `plan`):
+
+```sh
+ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=present"
+``
 
 To destroy the system, run:
 

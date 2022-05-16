@@ -54,7 +54,7 @@
           variables_files: 
             - '{{ playbook_dir }}/../../../env/{{ system_env }}/terraform.tfvars'
             - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
-          state: '{{ deployment | default("present") }}'
+          state: '{{ deployment | default("planned") }}'
 
       - meta: refresh_inventory
 
