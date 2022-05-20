@@ -20,7 +20,9 @@ The IaC is located in the `code` directory. Most likely you will not need to cha
 │   └── terraform.tfvars  <<< # Terraform variables
 ```
 
-To deploy the system, run (don't forget to export `ANSIBLE_VAULT_PASSWORD_FILE`):
+> don't forget to export `ANSIBLE_VAULT_PASSWORD_FILE`
+
+To deploy the system, run:
 
 ```sh
 ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "deployment=present"

@@ -124,6 +124,8 @@
       docker_container:
         name: portainer
         image: portainer/portainer-ce:latest
+        labels:
+          com.centurylinklabs.watchtower.enable: "true"
         state: started
         restart_policy: always
         security_opts:
