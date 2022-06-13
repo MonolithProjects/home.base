@@ -47,3 +47,21 @@
   variable "hv1_support_os_img_url"  {}
   variable "hv1_support_bridge"  {}
   variable "hv1_support_xml_override" {}
+
+  variable "hv1_hassio_vm_prefix" {}
+  variable "hv1_hassio_vm_count"    {}
+  variable "hv1_hassio_index_start" {}
+  variable "hv1_hassio_memory"      {}
+  variable "hv1_hassio_vcpu"        {}
+  variable "hv1_hassio_pool"        {}
+  variable "hv1_hassio_system_volume" {}
+  variable "hv1_hassio_dhcp"        {}
+  variable "hv1_hassio_ip_address" {}
+  variable "hv1_hassio_ip_gateway" {}
+  variable "hv1_hassio_ip_nameserver" {}
+  variable "hv1_hassio_local_admin" {}
+  variable "hv1_hassio_ssh_admin"   {}
+  variable "hv1_hassio_time_zone"   {}
+  variable "hv1_hassio_os_img_url"  {}
+  variable "hv1_hassio_bridge"  {}
+  variable "hv1_hassio_xml_override" {}

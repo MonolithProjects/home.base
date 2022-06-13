@@ -1,6 +1,6 @@
 ---
 - name: Bootstrap virtual servers
-  hosts: vservers
+  hosts: vservers,hassio
   user: sshadmin
   become: yes
   gather_facts: yes
@@ -27,13 +27,17 @@
         device: "/dev/{{ backup_disk | regex_replace('1$', '') }}"
         number: 1
         state: present
-      when: system_env == "prod"
+      when: 
+        - system_env == "prod"
+        - "'vservers' in group_names"
 
     - name: Create a ext4 filesystem on backup disk
       filesystem:
         fstype: ext4
         dev: "/dev/{{ backup_disk }}"
-      when: system_env == "prod"
+      when: 
+        - system_env == "prod"
+        - "'vservers' in group_names"
 
     - name: Create mountpoints for external starage
       file:
@@ -63,7 +67,9 @@
           src: "/dev/{{ data_disk }}"
           fstype: ext4
           state: mounted
-      when: system_env == "prod"
+      when: 
+        - system_env == "prod"
+        - "'vservers' in group_names"
 
     - name: Change Docker service - Create folder
       file:
@@ -107,7 +113,7 @@
         path: /etc/modules-load.d/ansible_managed.conf
         state: touch
 
-    - name: Set Asnible managed kernel modules to be persinsent
+    - name: Set Ansible managed kernel modules to be persinsent
       lineinfile:
         path: /etc/modules-load.d/ansible_managed.conf
         state: present
@@ -136,6 +142,7 @@
           - portainer-data:/data
         ports:
           - 9000:9000
+      when: "'vservers' in group_names"
 
 ########## Prune Docker #########################
     - name: Copy PruneDocker service

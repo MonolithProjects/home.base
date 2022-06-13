@@ -5,7 +5,7 @@ libvirt_hv1       = "qemu:///system"
 hv1_vm_prefix     = "hv1-vserver"
 hv1_vm_count      = 1
 hv1_index_start   = 1
-hv1_memory        = "2048"
+hv1_memory        = "1024"
 hv1_vcpu          = 2
 hv1_pool          = "host1"
 hv1_system_volume = 20
@@ -36,7 +36,7 @@ hv1_xml_override = {
 hv1_support_vm_prefix     = "hv1-vsupport"
 hv1_support_vm_count      = 1
 hv1_support_index_start   = 1
-hv1_support_memory        = "1048"
+hv1_support_memory        = "1024"
 hv1_support_vcpu          = 2
 hv1_support_pool          = "host1"
 hv1_support_system_volume = 20
@@ -55,6 +55,36 @@ hv1_support_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-ser
 hv1_support_bridge        = "virbr0"
 
 hv1_support_xml_override = {
+      hugepages = false,
+      usb_controllers = [
+        {
+          model = "qemu-xhci"
+        }
+      ],
+      usb_devices = []
+    }
+
+hv1_hassio_vm_prefix     = "hv1-hassio"
+
+# vServer count
+hv1_hassio_vm_count      = 1
+
+hv1_hassio_index_start   = 1
+hv1_hassio_memory        = "1024"
+hv1_hassio_vcpu          = 2
+hv1_hassio_pool          = "host1"
+hv1_hassio_system_volume = 10
+hv1_hassio_dhcp          = false
+hv1_hassio_ip_address    = ["192.168.122.181"]
+hv1_hassio_ip_gateway    = "192.168.122.1"
+hv1_hassio_ip_nameserver = "192.168.122.1"
+hv1_hassio_local_admin   = "localadmin"
+hv1_hassio_ssh_admin     = "sshadmin"
+hv1_hassio_time_zone     = "CET"
+hv1_hassio_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-server-cloudimg-amd64.img"
+hv1_hassio_bridge        = "virbr0"
+
+hv1_hassio_xml_override = {
       hugepages = false,
       usb_controllers = [
         {
