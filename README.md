@@ -60,7 +60,6 @@ Some facts:
 
 ![](./architecture.png)
 
-
 ### Compute nodes
 
 - Mini PCs
@@ -72,6 +71,5 @@ Some facts:
 ## TO DO list
 
 - Automated backup of heimdall, Home Assistant and Portainer configs
-- vSupport VM
 - Use the second compute node for dev environment
 - CI/CD using Github Actions
