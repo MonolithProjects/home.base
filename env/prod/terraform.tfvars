@@ -11,7 +11,7 @@ hv1_vm_prefix     = "hv1-vserver"
 hv1_vm_count      = 1
 
 hv1_index_start   = 1
-hv1_memory        = "6144"
+hv1_memory        = "4096"
 hv1_vcpu          = 3
 hv1_pool          = "storage_pool"
 hv1_system_volume = 70
@@ -62,7 +62,7 @@ hv1_support_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-ser
 hv1_support_bridge        = "br0"
 
 hv1_support_xml_override = {
-      hugepages = false,
+      hugepages = true,
       usb_controllers = [
         {
           model = "qemu-xhci"
@@ -77,7 +77,7 @@ hv1_hassio_vm_prefix     = "hv1-hassio"
 hv1_hassio_vm_count      = 1
 
 hv1_hassio_index_start   = 1
-hv1_hassio_memory        = "768"
+hv1_hassio_memory        = "2560"
 hv1_hassio_vcpu          = 3
 hv1_hassio_pool          = "storage_pool"
 hv1_hassio_system_volume = 10
@@ -92,7 +92,7 @@ hv1_hassio_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-serv
 hv1_hassio_bridge        = "br0"
 
 hv1_hassio_xml_override = {
-      hugepages = false,
+      hugepages = true,
       usb_controllers = [
         {
           model = "qemu-xhci"
