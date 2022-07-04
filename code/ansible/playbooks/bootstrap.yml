@@ -22,24 +22,8 @@
     - geerlingguy.docker
 
   tasks:
-    - name: Create a new primary partition on backup_disk disk
-      parted:
-        device: "/dev/{{ backup_disk | regex_replace('1$', '') }}"
-        number: 1
-        state: present
-      when: 
-        - system_env == "prod"
-        - "'vservers' in group_names"
 
-    - name: Create a ext4 filesystem on backup disk
-      filesystem:
-        fstype: ext4
-        dev: "/dev/{{ backup_disk }}"
-      when: 
-        - system_env == "prod"
-        - "'vservers' in group_names"
-
-    - name: Create mountpoints for external starage
+    - name: Create mountpoints
       file:
         path: "{{ item }}"
         recurse: no # for some reason the recurse option causes big time delay (module bug?)
@@ -52,8 +36,21 @@
         - "/mnt/volumes/persistent_storage"
         - "/mnt/volumes/backup"
 
+### Prod only VVVV ############################## (TBD: move to a separate file(?))
+
     - name: Mount Production storage
       block:
+      - name: Create a new primary partition on backup_disk disk
+        parted:
+          device: "/dev/{{ backup_disk | regex_replace('1$', '') }}"
+          number: 1
+          state: present
+
+      - name: Create a ext4 filesystem on backup disk
+        filesystem:
+          fstype: ext4
+          dev: "/dev/{{ backup_disk }}"
+
       - name: Mount backup_disk disk
         mount:
           path: "/mnt/volumes/backup"
@@ -70,6 +67,8 @@
       when: 
         - system_env == "prod"
         - "'vservers' in group_names"
+
+### Prod only ^^^^ ##############################
 
     - name: Change Docker service - Create folder
       file:

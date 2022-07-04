@@ -40,10 +40,6 @@ hv1_xml_override = {
         { 
           vendor = "0x090c",
           product = "0x1000"
-        },
-        { 
-          vendor = "0x0451",
-          product = "0x16a8"
         }
       ]
     }
@@ -102,5 +98,10 @@ hv1_hassio_xml_override = {
           model = "qemu-xhci"
         }
       ],
-      usb_devices = []
+      usb_devices = [
+        { 
+          vendor = "0x0451",
+          product = "0x16a8"
+        }
+      ]
     }
