@@ -56,7 +56,7 @@ hv1_support_vcpu          = 1
 hv1_support_pool          = "storage_pool"
 hv1_support_system_volume = 10
 hv1_support_dhcp          = false
-hv1_support_ip_address    = ["192.168.160.111"]
+hv1_support_ip_address    = ["192.168.160.111", "192.168.160.112"]
 hv1_support_ip_gateway    = "192.168.160.254"
 hv1_support_ip_nameserver = "192.168.160.254"
 hv1_support_local_admin   = "localadmin"
@@ -81,7 +81,7 @@ hv1_hassio_vm_prefix     = "hv1-hassio"
 hv1_hassio_vm_count      = 1
 
 hv1_hassio_index_start   = 1
-hv1_hassio_memory        = "512"
+hv1_hassio_memory        = "768"
 hv1_hassio_vcpu          = 3
 hv1_hassio_pool          = "storage_pool"
 hv1_hassio_system_volume = 10

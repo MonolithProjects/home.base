@@ -54,15 +54,17 @@
           variables_files: 
             - '{{ playbook_dir }}/../../../env/{{ system_env }}/terraform.tfvars'
             - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
-          state: '{{ deployment | default("planned") }}'
+          state: '{{ deployment | default("present") }}'
+        check_mode: '{{ only_tf_plan | default( false ) | bool }}'
 
       - meta: refresh_inventory
 
       always:
-      - name: Delete decrypted files
+      - name: Delete decrypted files and .terraform directory
         file:
           state: absent
           path: "{{ item }}"
         with_items:
           - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.secrets.tfvars'
           - '{{ playbook_dir }}/../../../env/{{ system_env }}/decrypted.backend.hcl'
+          - '{{ playbook_dir }}/../../../code/terraform/.terraform'
