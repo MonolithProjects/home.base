@@ -13,3 +13,13 @@
   tags: 
     - deploy
     - bootstrap
+
+
+############ Install Runners ####################
+
+- name: Install Runners
+  import_playbook: code/ansible/playbooks/runner.yml
+  tags: 
+    - deploy
+    - runner
+    - runners
