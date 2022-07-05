@@ -1,0 +1,95 @@
+---
+# All dependencies derived from https://github.com/actions/runner/blob/main/docs/start/envlinux.md
+- name: Install dependencies on Debian Stretch
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.1
+      - libicu57
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "9")
+
+- name: Install dependencies on Debian Buster
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.1
+      - libicu63
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "10")
+
+- name: Install dependencies on Debian Bullseye
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.1
+      - libicu67
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Debian" and ansible_distribution_major_version == "11")
+
+- name: Install dependencies on Ubuntu Xenial systems
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.0.0
+      - libicu55
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "16")
+
+- name: Install dependencies on Ubuntu Bionic systems
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.1
+      - libicu60
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "18")
+
+- name: Install dependencies on Ubuntu Focal systems
+  package:
+    pkg:
+      - acl
+      - liblttng-ust0
+      - libkrb5-3
+      - zlib1g
+      - libssl1.1
+      - libicu66
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "Ubuntu" and ansible_distribution_major_version == "20")
+
+- name: Install dependencies on RHEL/CentOS/Fedora systems
+  package:
+    name:
+      - acl
+      - lttng-ust
+      - openssl-libs
+      - krb5-libs
+      - zlib
+      - libicu
+    state: present
+    update_cache: yes
+  when: (ansible_distribution == "RedHat") or
+        (ansible_distribution == "CentOS") or
+        (ansible_distribution == "Fedora") or
+        (ansible_distribution == "Rocky")

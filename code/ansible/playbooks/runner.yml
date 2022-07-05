@@ -1,0 +1,42 @@
+---
+
+- name: GitHub self-hosted runner
+  hosts: vsupport
+  user: sshadmin
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Create sudoers.d file
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/runner
+        regexp: '^runner '
+        line: runner ALL=(ALL) NOPASSWD:ALL
+        create: yes
+
+  roles:
+    - name: Runner user
+      role: monolithprojects.user_management
+      user_management:
+        - name: runner
+          comment: User for GHA Runner
+          shell: /bin/bash
+          expires: -1
+          create_home: yes
+          system: no
+
+    - name: alpha
+      role: monolithprojects.github_actions_runner
+      runner_name: alpha
+      runner_user: runner
+      github_account: monolithprojects
+      github_repo: home.base
+      runner_dir: /opt/actions-runner/alpha
+
+    - name: beta
+      role: monolithprojects.github_actions_runner
+      runner_name: beta
+      runner_user: runner
+      github_account: monolithprojects
+      github_repo: home.base
+      runner_dir: /opt/actions-runner/beta
