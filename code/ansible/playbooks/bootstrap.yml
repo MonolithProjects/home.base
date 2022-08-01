@@ -15,7 +15,15 @@
           - "linux-modules-extra-{{ ansible_kernel }}"
         state: present
       notify: reboot server
+      when: ansible_facts['distribution'] == "Ubuntu"
 
+    - name: "Install linux-image--{{ ansible_kernel }}"
+      package:
+        name: 
+          - "linux-image-{{ ansible_kernel }}"
+        state: present
+      notify: reboot server
+      when: ansible_facts['distribution'] == "Debian"
 
   roles:
     - geerlingguy.pip
@@ -26,9 +34,10 @@
     - name: Create mountpoints
       file:
         path: "{{ item }}"
-        recurse: no # for some reason the recurse option causes big time delay (module bug?)
+        recurse: no
         state: directory
-        owner: "{{ ansible_user_gid }}"
+        mode: 0770
+        owner: "{{ ansible_user_id }}"
         group: "{{ ansible_user_gid }}"
       with_items:
         - "/mnt/volumes"
@@ -39,6 +48,18 @@
 ### Prod only VVVV ############################## (TBD: move to a separate file(?))
 
     - name: Mount Production storage
+      block:
+      - name: Mount data disk
+        mount:
+          path: "/mnt/volumes/nfs"
+          src: "/dev/{{ data_disk }}"
+          fstype: ext4
+          state: mounted
+      when: 
+        - system_env == "prod"
+        - "'vservers' in group_names"
+
+    - name: Mount Backup storage
       block:
       - name: Create a new primary partition on backup_disk disk
         parted:
@@ -57,16 +78,9 @@
           src: "/dev/{{ backup_disk }}"
           fstype: ext4
           state: mounted
-
-      - name: Mount data disk
-        mount:
-          path: "/mnt/volumes/nfs"
-          src: "/dev/{{ data_disk }}"
-          fstype: ext4
-          state: mounted
       when: 
         - system_env == "prod"
-        - "'vservers' in group_names"
+        - "'vsupport' in group_names"
 
 ### Prod only ^^^^ ##############################
 
@@ -141,7 +155,8 @@
           - portainer-data:/data
         ports:
           - 9000:9000
-      when: "'vservers' in group_names"
+      when: 
+        - "'vsupport' in group_names"
 
 ########## Prune Docker #########################
     - name: Copy PruneDocker service

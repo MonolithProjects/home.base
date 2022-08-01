@@ -8,6 +8,6 @@ pip_install_packages:
   - docker
 
 data_disk: sda1
-backup_disk: sdb1
+backup_disk: sda1
 
 run_backup: false

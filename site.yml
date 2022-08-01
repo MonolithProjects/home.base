@@ -14,12 +14,19 @@
     - deploy
     - bootstrap
 
+# ########### Install Runners ####################
 
-############ Install Runners ####################
+# - name: Install Runners
+#   import_playbook: code/ansible/playbooks/runner.yml
+#   tags: 
+#     - deploy
+#     - runner
+#     - runners
 
-- name: Install Runners
-  import_playbook: code/ansible/playbooks/runner.yml
+############ Prepare backup #####################
+
+- name: Prepare backup
+  import_playbook: code/ansible/playbooks/backup.yml
   tags: 
     - deploy
-    - runner
-    - runners
+    - backup

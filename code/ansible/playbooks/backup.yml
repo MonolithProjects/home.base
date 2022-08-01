@@ -1,0 +1,82 @@
+---
+
+- name: Install nfs
+  hosts: all, !vsupport
+  user: sshadmin
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: NFS server
+      docker_container:
+        name: "nfs"
+        image: "erichough/nfs-server"
+        state: started
+        volumes:
+          - "/mnt/volumes/persistent_storage:/persistent_storage:rw"
+        env:
+          NFS_EXPORT_1: "/persistent_storage {{hostvars['hv1-vsupport01']['ansible_host']}}(rw,async,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+        restart_policy: always
+        privileged: yes
+        network_mode: host
+
+- name: Backup Preps
+  hosts: vsupport
+  user: sshadmin
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Additional packages
+      package:
+        name: 
+          - nfs-common
+        state: present
+
+    - name: Create base mountpoint
+      file:
+        path: "{{ item }}"
+        recurse: no
+        state: directory
+        mode: 0770
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_gid }}"
+      with_items:
+        - "/mnt/volumes/source"
+        - "/mnt/volumes/source/hv1-hassio01"
+        - "/mnt/volumes/source/hv1-vserver01"
+
+    - name: Mount NFS shares hv1-vserver01
+      ansible.posix.mount:
+        src: "{{hostvars['hv1-vserver01']['ansible_host']}}:/persistent_storage"
+        path: /mnt/volumes/source/hv1-vserver01
+        state: mounted
+        fstype: nfs
+
+    - name: Mount NFS shares hv1-hassio01
+      ansible.posix.mount:
+        src: "{{hostvars['hv1-hassio01']['ansible_host']}}:/persistent_storage"
+        path: /mnt/volumes/source/hv1-hassio01
+        state: mounted
+        fstype: nfs
+
+
+##### Does not work with Duplicati - nfs is not automounted :-(
+    # - name: autofs
+    #   ansible.builtin.include_role:
+    #     name: robertdebock.autofs
+    #   vars:
+    #     nis_master_map: auto.master
+    #     autofs_maps:
+    #     - mountpoint: "/mnt/volumes/source"
+    #       options:
+    #         - "--timeout=60"
+    #       directories:
+    #         - path: "hv1-vserver01"
+    #           options:
+    #             - fstype=nfs
+    #           server: "{{hostvars['hv1-vserver01']['ansible_host']}}:/persistent_storage"
+    #         - path: "hv1-hassio01"
+    #           options:
+    #             - fstype=nfs
+    #           server: "{{hostvars['hv1-hassio01']['ansible_host']}}:/persistent_storage"

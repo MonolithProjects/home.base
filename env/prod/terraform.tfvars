@@ -36,10 +36,6 @@ hv1_xml_override = {
         { 
           vendor = "0x0bc2",
           product = "0xab28"
-        },
-        { 
-          vendor = "0x090c",
-          product = "0x1000"
         }
       ]
     }
@@ -47,8 +43,8 @@ hv1_xml_override = {
 hv1_support_vm_prefix     = "hv1-vsupport"
 hv1_support_vm_count      = 1
 hv1_support_index_start   = 1
-hv1_support_memory        = "512"
-hv1_support_vcpu          = 1
+hv1_support_memory        = "1024"
+hv1_support_vcpu          = 2
 hv1_support_pool          = "storage_pool"
 hv1_support_system_volume = 10
 hv1_support_dhcp          = false
@@ -68,7 +64,12 @@ hv1_support_xml_override = {
           model = "qemu-xhci"
         }
       ],
-      usb_devices = []
+      usb_devices = [
+        { 
+          vendor = "0x090c",
+          product = "0x1000"
+        }
+      ]
     }
 
 hv1_hassio_vm_prefix     = "hv1-hassio"
@@ -77,18 +78,18 @@ hv1_hassio_vm_prefix     = "hv1-hassio"
 hv1_hassio_vm_count      = 1
 
 hv1_hassio_index_start   = 1
-hv1_hassio_memory        = "2560"
+hv1_hassio_memory        = "2048"
 hv1_hassio_vcpu          = 3
 hv1_hassio_pool          = "storage_pool"
 hv1_hassio_system_volume = 20
 hv1_hassio_dhcp          = false
-hv1_hassio_ip_address    = ["192.168.160.121"]
+hv1_hassio_ip_address    = ["192.168.160.102"]
 hv1_hassio_ip_gateway    = "192.168.160.254"
 hv1_hassio_ip_nameserver = "192.168.160.254"
 hv1_hassio_local_admin   = "localadmin"
 hv1_hassio_ssh_admin     = "sshadmin"
 hv1_hassio_time_zone     = "CET"
-hv1_hassio_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-server-cloudimg-amd64.img"
+hv1_hassio_os_img_url    = "file:///home/mike/Documents/images/debian-11-generic-amd64-20210814-734.img"
 hv1_hassio_bridge        = "br0"
 
 hv1_hassio_xml_override = {
