@@ -1,5 +1,5 @@
 ---
- # ansible-galaxy install -f -r ./requirements.yml --roles-path=./code/ansible/roles
+# ansible-galaxy install -f -r ./requirements.yml --roles-path=./code/ansible/roles
 
 - name: geerlingguy.docker
   version: master
@@ -12,5 +12,3 @@
 
 - name: monolithprojects.user_management
   version: master
-
-- name: robertdebock.autofs
