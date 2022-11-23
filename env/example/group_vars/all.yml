@@ -8,3 +8,5 @@ pip_install_packages:
   - docker
 
 run_backup: false
+
+osagent_version: latest

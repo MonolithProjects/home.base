@@ -1,0 +1,66 @@
+---
+
+- name: Home-Assistant node prerequisites
+  hosts: hassio
+  user: sshadmin
+  become: yes
+  gather_facts: yes
+  vars:
+    osagent_download_repository: "home-assistant/os-agent"
+    osagent_version: latest
+    cpu_architecture: x86_64
+
+  tasks:
+  - name: Find the latest OS Agent version
+    ansible.builtin.uri:
+      url: "https://api.github.com/repos/{{ osagent_download_repository }}/releases/latest"
+      headers:
+        Content-Type: "application/json"
+      method: GET
+      return_content: yes
+      status_code: 200
+      body_format: json
+    check_mode: false
+    register: api_response
+    run_once: true
+    become: false
+    delegate_to: localhost
+    when: osagent_version == "latest"
+
+  - name: Set OS Agent variable (If latest)
+    ansible.builtin.set_fact:
+      osagent_version: "{{ api_response.json.tag_name | regex_replace('^v', '') }}"
+    when: osagent_version == "latest"
+
+  - name: Check if OS Agent is installed
+    ansible.builtin.command: dpkg-query -W os-agent
+    register: osagent_check_deb
+    failed_when: osagent_check_deb.rc > 1
+    changed_when: osagent_check_deb.rc == 1
+
+  - name: Download OS Agent
+    ansible.builtin.get_url: 
+      url: "https://github.com/{{ osagent_download_repository }}/releases/download/{{ osagent_version }}/os-agent_{{ osagent_version }}_linux_{{ cpu_architecture }}.deb"
+      dest: "/tmp/os-agent.deb"
+    when: osagent_check_deb.rc == 1
+
+  - name: Install OS Agent
+    ansible.builtin.apt: 
+      deb: "/tmp/os-agent.deb"
+    become: true
+    when: osagent_check_deb.rc == 1
+
+  - name: Install systemd-journal-remote
+    ansible.builtin.apt:
+      name: systemd-journal-remote
+      state: present
+
+  - name: Start services
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - dbus
+      - systemd-resolved
+      - systemd-journal-gatewayd

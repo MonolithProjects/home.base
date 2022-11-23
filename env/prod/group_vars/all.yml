@@ -11,3 +11,5 @@ data_disk: sda1
 backup_disk: sda1
 
 run_backup: false
+
+osagent_version: latest
