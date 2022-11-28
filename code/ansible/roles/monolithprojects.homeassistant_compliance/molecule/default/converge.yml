@@ -1,0 +1,9 @@
+---
+- name: Converge
+  hosts: all
+  user: ansible
+  become: true
+  tasks:
+    - name: "Include monolithprojects.homeassistant_compliance"
+      include_role:
+        name: "monolithprojects.homeassistant_compliance"

@@ -1,0 +1,217 @@
+---
+- name: Check this Operating System is supported
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version == "11"
+    fail_msg: "Only Debian 11 is supported."
+
+- name: Fix Apparmor
+  when: ha_fix_apparmor
+  tags: notest
+  block:
+  - name: Check if Apparmor is configured in GRUB
+    ansible.builtin.lineinfile:
+      backup: true
+      path: /etc/default/grub
+      regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=".*apparmor=1 security=apparmor.*'
+      state: absent
+    check_mode: true
+    register: grub_cmdline_check
+    changed_when: false
+
+  - name: Instert Apparmor to GRUB config if it is missing
+    ansible.builtin.lineinfile:
+      backrefs: true
+      path: /etc/default/grub
+      regexp: "^(GRUB_CMDLINE_LINUX_DEFAULT=\".*)\"$"
+      line: '\1 apparmor=1 security=apparmor"'
+    when: grub_cmdline_check.found == 0
+    notify: Update grub
+
+- name: Fix DBus
+  when: ha_fix_dbus
+  block:
+  - name: Install DBus
+    ansible.builtin.apt:
+      name: dbus
+      update_cache: yes
+      state: present
+
+  - name: Start dbus
+    ansible.builtin.service:
+      name: dbus
+      state: started
+      enabled: yes
+
+- name: Fix Docker
+  when: ha_fix_docker
+  block:
+  - name: Check Docker version
+    ansible.builtin.shell: |
+      set -eo pipefail
+      docker --version | awk '{print $3}' |sed "s/,//"
+    args:
+        executable: /bin/bash
+    changed_when: false
+    register: docker_version
+
+  - name: Upgrade Docker
+    ansible.builtin.apt:
+      name: docker-ce
+      only_upgrade: yes
+      update_cache: yes
+      state: present
+    when: "docker_version.stdout is version(ha_fix_docker_minimal, '<')"
+
+  - name: Create /etc/docker directory
+    ansible.builtin.file:
+      dest: /etc/docker
+      state: directory
+      mode: 0755
+
+  - name: Copy Docker daemon.json file
+    ansible.builtin.copy:
+      src: files/daemon.json
+      dest: /etc/docker/daemon.json
+      mode: 0644
+
+- name: Fix OS Agent
+  when: ha_fix_osagent
+  block:
+  - name: Find the latest OS Agent version
+    ansible.builtin.uri:
+      url: "https://api.github.com/repos/{{ ha_fix_osagent_download_repository }}/releases/latest"
+      headers:
+        Content-Type: "application/json"
+      method: GET
+      return_content: yes
+      status_code: 200
+      body_format: json
+    check_mode: false
+    register: api_response
+    run_once: true
+    delegate_to: localhost
+    when: ha_fix_osagent_version == "latest"
+
+  - name: Set OS Agent variable (If latest)
+    ansible.builtin.set_fact:
+      ha_fix_osagent_version: "{{ api_response.json.tag_name | regex_replace('^v', '') }}"
+    when: ha_fix_osagent_version == "latest"
+
+  - name: Check if OS Agent is installed
+    ansible.builtin.command: dpkg-query -W os-agent
+    register: osagent_check_deb
+    failed_when: osagent_check_deb.rc > 1
+    changed_when: osagent_check_deb.rc == 1
+
+  - name: Download OS Agent
+    ansible.builtin.get_url:
+      url: "https://github.com/{{ ha_fix_osagent_download_repository }}/releases/download/{{ ha_fix_osagent_version }}/os-agent_{{ ha_fix_osagent_version }}_linux_{{ ha_fix_osagent_cpu_architecture }}.deb"
+      dest: "/tmp/os-agent.deb"
+      mode: 0700
+    when: osagent_check_deb.rc == 1
+
+  - name: Install OS Agent
+    ansible.builtin.apt:
+      deb: "/tmp/os-agent.deb"
+      update_cache: yes
+    when: osagent_check_deb.rc == 1
+
+- name: Fix Systemd Resolved service
+  when: ha_fix_systemd_resolved
+  block:
+  - name: Start services
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - systemd-resolved
+
+- name: Fix Systemd Journal service
+  when: ha_fix_systemd_journal
+  block:
+  - name: Install systemd-journal-remote
+    ansible.builtin.apt:
+      name: systemd-journal-remote
+      update_cache: yes
+      state: present
+
+  - name: Start systemd-journal
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - systemd-journal-gatewayd
+
+- name: Fix CGroup version
+  when: ha_fix_cgroup
+  tags: notest
+  block:
+  - name: Check if CGroup v1 is configured in GRUB
+    ansible.builtin.lineinfile:
+      backup: true
+      path: /etc/default/grub
+      regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=".*systemd.unified_cgroup_hierarchy=false.*'
+      state: absent
+    check_mode: true
+    register: grub_cmdline_check
+    changed_when: false
+
+  - name: Instert CGroup v1 to GRUB config if it is missing
+    ansible.builtin.lineinfile:
+      backrefs: true
+      path: /etc/default/grub
+      regexp: "^(GRUB_CMDLINE_LINUX_DEFAULT=\".*)\"$"
+      line: '\1 systemd.unified_cgroup_hierarchy=false"'
+    when: grub_cmdline_check.found == 0
+    notify: Update grub
+
+- name: Fix Network Manager
+  when: ha_fix_network_manager
+  block:
+  - name: Install Network Manager
+    ansible.builtin.apt:
+      name: network-manager
+      update_cache: yes
+      state: present
+
+  - name: Start Network Manager
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: yes
+    with_items:
+      - NetworkManager
+
+  - name: Edit network interfaces file
+    ansible.builtin.copy:
+      dest: /etc/network/interfaces
+      content: "{{ ha_fix_network_manager_interfaces }}"
+      mode: 0644
+    notify: NetworkManager restart
+
+  - name: Edit NetworkManager.conf file
+    ansible.builtin.copy:
+      dest: /etc/NetworkManager/NetworkManager.conf
+      content: "{{ ha_fix_network_manager_conf }}"
+      mode: 0644
+    notify: NetworkManager restart
+
+  - name: Edit NetworkManager connection default file
+    ansible.builtin.copy:
+      dest: /etc/NetworkManager/system-connections/default
+      content: "{{ ha_fix_network_manager_default }}"
+      mode: 0644
+    notify: NetworkManager restart
+
+- name: Fix LXC
+  when: ha_fix_lxc
+  block:
+  - name: Uninstall LXC
+    ansible.builtin.apt:
+      name: lxc
+      state: absent
+      purge: yes

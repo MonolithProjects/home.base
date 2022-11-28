@@ -12,3 +12,6 @@
 
 - name: monolithprojects.user_management
   version: master
+
+- name: monolithprojects.homeassistant_compliance
+  version: 0.1.1

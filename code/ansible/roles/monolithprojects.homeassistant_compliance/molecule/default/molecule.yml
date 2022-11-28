@@ -1,0 +1,36 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  ansible-lint .
+platforms:
+  - name: "debian11-latest"
+    image: "monolithprojects/systemd-debian11:latest"
+    command: /sbin/init
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: yes
+    pre_build_image: yes
+provisioner:
+  name: ansible
+verifier:
+  name: ansible
+scenario:
+  name: default
+  test_sequence:
+    - dependency
+    - lint
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - cleanup
+    - destroy

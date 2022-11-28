@@ -16,5 +16,10 @@
     name: systemd-resolved
     state: restarted
 
+- name: Update grub
+  command: update-grub
+  become: yes
+
 - name: reboot server
   reboot:
+  listen: Update grub

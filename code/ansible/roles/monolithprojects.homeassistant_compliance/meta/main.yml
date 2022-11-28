@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  author: Michal Muransky
+  namespace: monolithprojects
+  role_name: homeassistant_compliance
+  description: This Ansible role configure Debian 11 Operating System to be complient with Home Assistant Supervisor.
+  company: MonolithProjects
+  license: "license (MIT)"
+
+  min_ansible_version: "2.10"
+
+  platforms:
+  - name: Debian
+    versions:
+    - bullseye
+
+  galaxy_tags:
+  - home
+  - assistant
+  - homeassistant
+  - system

@@ -1,0 +1,15 @@
+---
+- name: Prepare
+  hosts: all
+  user: ansible
+  become: true
+  vars:
+    docker_service_state: stopped
+  pre_tasks:
+    - name: Install packages
+      ansible.builtin.package:
+        update_cache: true
+        name:
+          - gnupg2
+  roles:
+    - geerlingguy.docker
