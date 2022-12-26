@@ -48,6 +48,12 @@ cd code/terraform/
 terraform init -backend-config=../../env/example/decrypted.backend.hcl -reconfigure
 ```
 
+To manually run the terraform (prep steps are the same as above):
+
+```sh
+terraform plan -var-file=../../env/prod/terraform.tfvars -var-file=../../env/prod/decrypted.secrets.tfvars
+```
+
 Some facts:
 - Secrets are encrypted using Ansible-vault (so you need to provide `--ask-vault-pass` option or `ANSIBLE_VAULT_PASSWORD_FILE` environment variable)
 - I am using Terraform cloud to store the state file

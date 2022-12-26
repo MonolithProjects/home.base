@@ -11,7 +11,7 @@ hv1_vm_prefix     = "hv1-vserver"
 hv1_vm_count      = 1
 
 hv1_index_start   = 1
-hv1_memory        = "4096"
+hv1_memory        = "3584"
 hv1_vcpu          = 3
 hv1_pool          = "storage_pool"
 hv1_system_volume = 30
@@ -43,7 +43,7 @@ hv1_xml_override = {
 hv1_support_vm_prefix     = "hv1-vsupport"
 hv1_support_vm_count      = 1
 hv1_support_index_start   = 1
-hv1_support_memory        = "1024"
+hv1_support_memory        = "1536"
 hv1_support_vcpu          = 2
 hv1_support_pool          = "storage_pool"
 hv1_support_system_volume = 10
