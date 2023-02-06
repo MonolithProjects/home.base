@@ -142,7 +142,7 @@
     - name: Portainer
       docker_container:
         name: portainer
-        image: portainer/portainer-ce:latest
+        image: portainer/portainer-ee:latest
         labels:
           com.centurylinklabs.watchtower.enable: "true"
           com.centurylinklabs.watchtower.scope: vsupport01

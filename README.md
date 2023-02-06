@@ -32,7 +32,7 @@ To only configure the system, and do not tun `terraform apply` (but still it wil
 
 ```sh
 ansible-playbook -i env/example/hosts.ini site.yml --extra-vars "only_tf_plan=true"
-``
+```
 
 To destroy the system, run:
 
