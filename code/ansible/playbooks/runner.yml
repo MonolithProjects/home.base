@@ -1,7 +1,7 @@
 ---
 
 - name: GitHub self-hosted runner
-  hosts: vsupport
+  hosts: runners
   user: sshadmin
   become: yes
   gather_facts: yes

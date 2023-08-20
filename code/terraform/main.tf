@@ -3,10 +3,17 @@ terraform {
     required_providers {
       libvirt = {
         source  = "dmacvicar/libvirt"
-        version = "0.6.14"
+        version = "0.7.1"
       }
     }
-  backend "remote" {}
+  backend "remote" {
+    hostname = "app.terraform.io"
+    organization = "monolithprojects"
+
+    workspaces {
+      prefix = "home-"
+    }
+  }
 }
 
 provider "libvirt" {
