@@ -4,22 +4,22 @@
 [![Galaxy Quality](https://img.shields.io/ansible/quality/47375?style=flat&logo=ansible)](https://galaxy.ansible.com/monolithprojects/github_actions_runner)
 [![Role version](https://img.shields.io/github/v/release/MonolithProjects/ansible-github_actions_runner)](https://galaxy.ansible.com/monolithprojects/github_actions_runner)
 [![Role downloads](https://img.shields.io/ansible/role/d/47375)](https://galaxy.ansible.com/monolithprojects/github_actions_runner)
-[![GitHub Actions](https://github.com/MonolithProjects/ansible-github_actions_runner/workflows/molecule%20test/badge.svg?branch=master)](https://github.com/MonolithProjects/ansible-github_actions_runner/actions)
+[![Molecule test](https://github.com/MonolithProjects/ansible-github_actions_runner/actions/workflows/tests.yml/badge.svg)](https://github.com/MonolithProjects/ansible-github_actions_runner/actions/workflows/tests.yml)
 [![License](https://img.shields.io/github/license/MonolithProjects/ansible-github_actions_runner)](https://github.com/MonolithProjects/ansible-github_actions_runner/blob/main/LICENSE)
 
 
-This role will deploy/redeploy/uninstall and register/unregister local GitHub Actions Runner.
-It supports both, Organization and Repository Runners.
+This role will deploy/redeploy/uninstall and register/unregister local GitHub Actions Runner on Linux and macOS Systems (see [compatibility list](#supported-operating-systems) ).
+It supports Enterprise, Organization and Repository Runners.
 
 ## Requirements
 
-* System must have access to the GitHub.
+* System must have access to the GitHub API.
 
-* The role require Personal Access Token to access the GitHub. The token has to be a value of `PERSONAL_ACCESS_TOKEN` variable.
-Export the token to the local host environment.
+* The role require Personal Access Token to access the GitHub. The token can be set as `PERSONAL_ACCESS_TOKEN` environment variable.
 
 > **Note**  
-> The token must have the `repo` scope (when creating a repo runner) or the `admin:org` scope (when creating a runner for an organization).
+> The token must have the `repo` scope (when creating a repo runner), the `admin:org` scope (when creating a runner for an organization),
+> the `manage_runners:enterprise` scope (when creating a enterprise runner).
 Personal Access Token for GitHub account can be created [here](https://github.com/settings/tokens).
 
 > **Warning**  
@@ -31,18 +31,26 @@ Personal Access Token for GitHub account can be created [here](https://github.co
 * CentOS systems require EPEL repository.
   Recommended role: `robertdebock.epel`
 
-## Supported CPU architecture:
+## Supported CPU architecture
 
 * ARM, ARM64 (dependencies installation is not covered by this role)
 * AMD64, x86_64
-## Tested on:
 
-* Debian 9,10,11
-* Fedora 35
+## Supported Operating Systems
+
+* Red Hat Enterprise Linux 7
+* CentOS 7
+* Rocky Linux 8+
+* Fedora 29+
+* Debian 9+
+* Ubuntu 16.04+
+* macOS High Sierra +
+## Weekly tested on:
+
+* Debian 11
+* Fedora 37
 * Rocky Linux 8
-* Ubuntu 18,20
-
-  **Note:** Fedora 32+ and Ubuntu 20 must use Ansible 2.9.8+. Other distros/releases will work also with older 2.8.0+ Ansible.
+* Ubuntu 20,22
 
 ## Role Variables
 
@@ -96,10 +104,6 @@ runner_extra_config_args: ""
 # Name to assign to this runner in GitHub (System hostname as default)
 runner_name: "{{ ansible_hostname }}"
 
-# Custom service name when using Github Enterprise server
-# DEPRECATED: this variable is deprecated in favor of "runner_on_ghes" and will be removed in release 1.15.
-# service_name: actions.runner._services.{{ runner_name }}.service
-
 # GitHub Repository user or Organization owner used for Runner registration
 # github_account: "youruser"
 
@@ -108,6 +112,9 @@ runner_name: "{{ ansible_hostname }}"
 
 # Github repository name
 # github_repo: "yourrepo"
+
+# GitHub Enterprise name
+# github_enterprise: "yourenterprise"
 
 # Configuring a custom .env file
 # custom_env: |
@@ -119,7 +126,7 @@ runner_name: "{{ ansible_hostname }}"
 # HTTP_PROXY=
 ```
 
-## Example Playbook
+## Example Playbooks
 
 In this example the Ansible role will install (or update) the GitHub Actions Runner service (latest available version). The runner will be registered for *my_awesome_repo* GitHub repo.
 Runner service will be stated and will run under the same user as the Ansible is using for ssh connection (*ansible*).
@@ -149,6 +156,20 @@ Same example as above, but runner will be added to an organization and deployed 
     - github_account: my_awesome_org
     - runner_org: yes
     - runner_on_ghes: yes
+  roles:
+    - role: monolithprojects.github_actions_runner
+```
+
+If you have a Github Enterprise Cloud license and you want to manage all the self-hosted runners from the enterprise:
+```yaml
+---
+- name: Install GitHub Actions Runner
+  hosts: all
+  user: automation
+  become: yes
+  vars:
+    - github_enterprise: my_awesome_enterprise
+    - runner_org: no
   roles:
     - role: monolithprojects.github_actions_runner
 ```

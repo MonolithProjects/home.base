@@ -1,10 +1,10 @@
 ---
 
-- name: GitHub self-hosted runner
-  hosts: runners
+- name: GitHub self-hosted runner 1
+  hosts: hv2-vrunner01
   user: sshadmin
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
 
   pre_tasks:
     - name: Create sudoers.d file
@@ -12,7 +12,8 @@
         path: /etc/sudoers.d/runner
         regexp: '^runner '
         line: runner ALL=(ALL) NOPASSWD:ALL
-        create: yes
+        create: true
+        mode: "0440"
 
   roles:
     - name: Runner user
@@ -22,21 +23,49 @@
           comment: User for GHA Runner
           shell: /bin/bash
           expires: -1
-          create_home: yes
-          system: no
+          create_home: true
+          system: false
 
     - name: alpha
       role: monolithprojects.github_actions_runner
       runner_name: alpha
       runner_user: runner
-      github_account: monolithprojects
-      github_repo: home.base
+      runner_org: true
+      github_account: mmjfk
       runner_dir: /opt/actions-runner/alpha
+      runner_state: started
+
+- name: GitHub self-hosted runner 2
+  hosts: hv2-vrunner02
+  user: sshadmin
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Create sudoers.d file
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/runner
+        regexp: '^runner '
+        line: runner ALL=(ALL) NOPASSWD:ALL
+        create: true
+        mode: "0440"
+
+  roles:
+    - name: Runner user
+      role: monolithprojects.user_management
+      user_management:
+        - name: runner
+          comment: User for GHA Runner
+          shell: /bin/bash
+          expires: -1
+          create_home: true
+          system: false
 
     - name: beta
       role: monolithprojects.github_actions_runner
       runner_name: beta
       runner_user: runner
-      github_account: monolithprojects
-      github_repo: home.base
-      runner_dir: /opt/actions-runner/beta
+      runner_org: true
+      github_account: mmjfk
+      runner_dir: /opt/actions-runner/alpha
+      runner_state: started

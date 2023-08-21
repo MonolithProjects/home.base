@@ -1,6 +1,6 @@
 ---
 - name: Bootstrap virtual servers
-  hosts: vservers,hassio,vsupport
+  hosts: all
   user: sshadmin
   become: yes
   gather_facts: yes

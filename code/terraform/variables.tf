@@ -6,6 +6,11 @@
     default = "qemu:///system"
   }
 
+  variable libvirt_hv2 {
+    default = "qemu:///system"
+  }
+
+
   variable "hv1_vm_prefix" {}
   variable "hv1_vm_count"    {}
   variable "hv1_index_start" {}
@@ -65,3 +70,21 @@
   variable "hv1_hassio_os_img_url"  {}
   variable "hv1_hassio_bridge"  {}
   variable "hv1_hassio_xml_override" {}
+
+  variable "hv2_vm_prefix" {}
+  variable "hv2_vm_count"    {}
+  variable "hv2_index_start" {}
+  variable "hv2_memory"      {}
+  variable "hv2_vcpu"        {}
+  variable "hv2_pool"        {}
+  variable "hv2_system_volume" {}
+  variable "hv2_dhcp"        {}
+  variable "hv2_ip_address" {}
+  variable "hv2_ip_gateway" {}
+  variable "hv2_ip_nameserver" {}
+  variable "hv2_local_admin" {}
+  variable "hv2_ssh_admin"   {}
+  variable "hv2_time_zone"   {}
+  variable "hv2_os_img_url"  {}
+  variable "hv2_bridge"  {}
+  variable "hv2_xml_override" {}

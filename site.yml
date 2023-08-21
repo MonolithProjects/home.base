@@ -25,12 +25,12 @@
 
 # ########### Install Runners ####################
 
-# - name: Install Runners
-#   import_playbook: code/ansible/playbooks/runner.yml
-#   tags: 
-#     - deploy
-#     - runner
-#     - runners
+- name: Install Runners
+  import_playbook: code/ansible/playbooks/runner.yml
+  tags: 
+    - deploy
+    - runner
+    - runners
 
 ############ Prepare backup #####################
 

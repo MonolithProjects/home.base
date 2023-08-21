@@ -8,7 +8,7 @@
   version: master
 
 - name: monolithprojects.github_actions_runner
-  version: master
+  version: 1.18.3
 
 - name: monolithprojects.user_management
   version: master

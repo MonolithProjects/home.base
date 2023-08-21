@@ -3,6 +3,7 @@ system_env        = "prod"
 
 # Libvirt KVM Compute node
 libvirt_hv1       = "qemu+ssh://hvadmin@192.168.160.201/system?keyfile=/home/mike/.ssh/id_ed25519_mono_010521&no_verify=1"
+libvirt_hv2       = "qemu+ssh://hvadmin@192.168.160.202/system?keyfile=/home/mike/.ssh/id_ed25519_mono_010521&no_verify=1"
 
 # vServer name prefix
 hv1_vm_prefix     = "hv1-vserver"
@@ -105,4 +106,34 @@ hv1_hassio_xml_override = {
           product = "0x16a8"
         }
       ]
+    }
+
+# vRunner
+hv2_vm_prefix     = "hv2-vrunner"
+
+hv2_vm_count      = 2
+
+hv2_index_start   = 1
+hv2_memory        = "3072"
+hv2_vcpu          = 3
+hv2_pool          = "default"
+hv2_system_volume = 40
+hv2_dhcp          = false
+hv2_ip_address    = ["192.168.160.103","192.168.160.104"]
+hv2_ip_gateway    = "192.168.160.254"
+hv2_ip_nameserver = "192.168.160.254"
+hv2_local_admin   = "localadmin"
+hv2_ssh_admin     = "sshadmin"
+hv2_time_zone     = "CET"
+hv2_os_img_url    = "file:///home/mike/Documents/images/ubuntu-20.04-server-cloudimg-amd64.img"
+hv2_bridge        = "br0"
+
+hv2_xml_override = {
+      hugepages = true,
+      usb_controllers = [
+        {
+          model = "qemu-xhci"
+        }
+      ],
+      usb_devices = []
     }
